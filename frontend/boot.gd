@@ -3,40 +3,72 @@ class_name PicoBootManager
 
 static var pico_zip_path: String = ""
 
-const BIN_PATH = "/system/bin"
-const APPDATA_FOLDER = "/data/data/io.wip.pico8/files"
-const PUBLIC_FOLDER = "/sdcard/Documents/pico8"
+# Static constants that can be accessed from other scripts
+static var BIN_PATH = "/system/bin"
+static var APPDATA_FOLDER = "/data/data/io.wip.pico8/files"
+static var PUBLIC_FOLDER = "/sdcard/Documents/pico8"
+
+# Centralized permission checking
+func has_storage_access() -> bool:
+    return (
+        "android.permission.MANAGE_EXTERNAL_STORAGE" in OS.get_granted_permissions() or
+        FileAccess.file_exists("user://dont-ask-for-storage")
+    )
+
+# Centralized UI state management
+func set_ui_state(permission_ui: bool = false, select_zip_ui: bool = false, progress_ui: bool = false):
+    (%AllFileAccessContainer as Node2D).visible = permission_ui
+    %SelectPicoZip.visible = select_zip_ui
+    (%UnpackProgressContainer as Node2D).visible = progress_ui
+
+# Centralized permission denial handling
+func handle_permission_denial():
+    var f = FileAccess.open("user://dont-ask-for-storage", FileAccess.WRITE)
+    f.close()
+    check_for_files()
 
 func get_pico_zip() -> Variant:
+    if not has_storage_access():
+        print("no storage permission, cannot check for existing pico zips")
+        return null
+    
     var public_folder = DirAccess.open(PUBLIC_FOLDER)
     if not public_folder:
-        print("could not open public folder")
-        return null
+        print("could not open public folder - trying to create it")
+        DirAccess.make_dir_recursive_absolute(PUBLIC_FOLDER)
+        public_folder = DirAccess.open(PUBLIC_FOLDER)
+        if not public_folder:
+            return null
+    
     var valid_pico_zips = Array(public_folder.get_files()).filter(
-        func (name):
-            return "pico-8" in name and "raspi.zip" in name
+        func (name): return "pico-8" in name and "raspi.zip" in name
     )
+    
     if valid_pico_zips:
         valid_pico_zips.sort()
-        return PUBLIC_FOLDER + "/" + valid_pico_zips[-1]
-    print("no valid zips")
+        var selected_zip = PUBLIC_FOLDER + "/" + valid_pico_zips[-1]
+        print("found existing pico zip: ", selected_zip)
+        return selected_zip
+    
+    print("no valid zips found")
     return null
 
 var android_picker
 
 func _ready() -> void:
-    check()
+    if has_storage_access():
+        check_for_files()
+    else:
+        request_storage_permission()
 
 const BOOTSTRAP_PACKAGE_VERSION = "1"
 
 func setup():
-    %SelectPicoZip.visible = false
-    (%UnpackProgressContainer as Node2D).visible = true
-    if (
-        "android.permission.MANAGE_EXTERNAL_STORAGE" not in OS.get_granted_permissions()
-        and FileAccess.file_exists("user://dont-ask-for-storage")
-    ):
-        %UnpackProgress.text += "warning: all files access is disabled"
+    set_ui_state(false, false, true)  # permission_ui=false, select_zip_ui=false, progress_ui=true
+    
+    # Add warning if no storage permission
+    if not has_storage_access():
+        %UnpackProgress.text += "warning: all files access is disabled\n"
 
     var tar_path = APPDATA_FOLDER + "/package.tar.gz"
     var tar_path_godot = "user://package.tar.gz"
@@ -116,44 +148,39 @@ func setup():
         %UnpackProgress.text = "no setup needed"
         if get_tree():
             await get_tree().process_frame
-    if (
-        "android.permission.MANAGE_EXTERNAL_STORAGE" in OS.get_granted_permissions()
-        or FileAccess.file_exists("user://dont-ask-for-storage")
-    ):
-        get_tree().change_scene_to_file("res://main.tscn")
-    else:
-        (%UnpackProgressContainer as Node2D).visible = false
-        (%AllFileAccessContainer as Node2D).visible = true
-        %GrantButton.pressed.connect(permission_grant)
-        %DenyButton.pressed.connect(permission_deny)
+    
+    # Setup is complete, go to main scene
+    get_tree().change_scene_to_file("res://main.tscn")
 
 var waiting_for_focus = false
-func permission_grant():
+
+func request_storage_permission():
+    set_ui_state(true, false, false)  # permission_ui=true, select_zip_ui=false, progress_ui=false
+    %GrantButton.pressed.connect(grant_permission)
+    %DenyButton.pressed.connect(handle_permission_denial)
+
+func grant_permission():
     OS.request_permission("android.permission.MANAGE_EXTERNAL_STORAGE")
     waiting_for_focus = true
 
 func _notification(what: int) -> void:
     if waiting_for_focus and what == NOTIFICATION_APPLICATION_FOCUS_IN:
-        get_tree().change_scene_to_file("res://main.tscn")
+        waiting_for_focus = false
+        check_for_files()
 
-func permission_deny():
-    var f = FileAccess.open("user://dont-ask-for-storage", FileAccess.WRITE)
-    f.close()
-    await get_tree().process_frame
-    get_tree().change_scene_to_file("res://main.tscn")
-
-func check():
+func check_for_files():
+    set_ui_state()  # Hide all UIs first (all parameters default to false)
+    
     var picozip = get_pico_zip()
     print("Pico zip: ", picozip)
     if picozip:
         pico_zip_path = picozip
         setup()
     else:
-        %SelectPicoZip.visible = true
+        set_ui_state(false, true, false)  # permission_ui=false, select_zip_ui=true, progress_ui=false
         %OpenPickerButton.pressed.connect(open_picker)
         %Label.text = "pico8 zip not found"
-        
-        
+
 func open_picker():
     if Engine.has_singleton("GodotFilePicker"):
         android_picker = Engine.get_singleton("GodotFilePicker")
@@ -189,14 +216,32 @@ func check_pico_zip(path: String):
             %Label.text = zipname + ": not a pico-8 raspberry pi file"
             return
     %Label.text = "yep that's a pico pi file"
-    var diraccess = DirAccess.open("user://")
+    
     var target_name = zipname
     if not ("pico-8" in zipname and "raspi.zip" in zipname):
         target_name = "pico-8_unknown_version_raspi.zip"
+    
+    # Ensure public folder exists
     OS.execute("/system/bin/mkdir", ["-p", PUBLIC_FOLDER])
-    print(path, " -> ", PUBLIC_FOLDER + "/" + zipname)
-    err = diraccess.copy(path, PUBLIC_FOLDER + "/" + zipname)
+    
+    var target_path = PUBLIC_FOLDER + "/" + target_name
+    print("copying ", path, " -> ", target_path)
+    
+    # Check if file already exists and try to remove it first
+    if FileAccess.file_exists(target_path):
+        print("target file already exists, attempting to remove it")
+        var diraccess = DirAccess.open(PUBLIC_FOLDER)
+        if diraccess:
+            var remove_err = diraccess.remove(target_name)
+            if remove_err != OK:
+                %Label.text = "error removing existing file: " + error_string(remove_err).to_lower()
+                return
+            print("successfully removed existing file")
+    
+    var diraccess = DirAccess.open("user://")
+    err = diraccess.copy(path, target_path)
     if err != OK:
         %Label.text = "error copying: " + error_string(err).to_lower()
         return
-    check()
+    
+    check_for_files()
