@@ -1,30 +1,29 @@
-extends CanvasLayer
+extends Control
 
 func _process(delta: float) -> void:
-	var orientation = DisplayServer.screen_get_orientation()
-	var is_landscape = false
-
-	if OS.has_feature("mobile"):
-		if (orientation == DisplayServer.ScreenOrientation.SCREEN_LANDSCAPE or
-			orientation == DisplayServer.ScreenOrientation.SCREEN_REVERSE_LANDSCAPE or
-			orientation == DisplayServer.ScreenOrientation.SCREEN_SENSOR_LANDSCAPE):
-			is_landscape = true
-		elif (orientation == DisplayServer.ScreenOrientation.SCREEN_PORTRAIT or
-			orientation == DisplayServer.ScreenOrientation.SCREEN_REVERSE_PORTRAIT or
-			orientation == DisplayServer.ScreenOrientation.SCREEN_SENSOR_PORTRAIT):
-			is_landscape = false
-		else:
-			var win_size = DisplayServer.window_get_size()
-			is_landscape = win_size.x > win_size.y
+	var win_size = DisplayServer.window_get_size()
+	var arranger = get_node_or_null("../Arranger")
+	if arranger:
+		# Force uniform scaling to prevent distortion (use X scale for both axes)
+		var s = arranger.scale.x
+		scale = Vector2(s, s)
+		# Compensate size so anchors cover the full viewport in local coordinates
+		size = get_viewport_rect().size / s
+		
+		# Inverse scale the high-res D-Pad so it stays physical size
+		var dpad = get_node_or_null("Control/LeftPad/Omnipad")
+		if dpad:
+			var target_scale = 0.85 / s
+			dpad.scale = Vector2(target_scale, target_scale)
 	else:
-		var win_size = DisplayServer.window_get_size()
-		is_landscape = win_size.x > win_size.y
+		size = get_viewport_rect().size
+	
+	var is_landscape = size.x >= size.y
 	
 	# Only show if in landscape mode AND controls are needed (no physical controller)
 	var is_controller_connected = _is_real_controller_connected()
 	var should_be_visible = is_landscape and not is_controller_connected
 	
-	# Debug print (remove later)
 	# print("LandscapeUI: landscape=", is_landscape, " controller=", is_controller_connected, " visible=", should_be_visible)
 	
 	visible = should_be_visible

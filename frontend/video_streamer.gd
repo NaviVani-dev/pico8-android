@@ -142,7 +142,7 @@ func _process(delta: float) -> void:
 			var data = errdata[1]
 			buffer.append_array(data)
 			if len(buffer) > PACKLEN * 2:
-				print("buffer overloaded, skipping")
+				#print("buffer overloaded, skipping")
 				var chopCount = floor((len(buffer) / PACKLEN)) - 1
 				#print(chopCount)
 				buffer = buffer.slice(chopCount * PACKLEN)

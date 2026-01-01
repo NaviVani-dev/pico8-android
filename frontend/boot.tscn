@@ -124,7 +124,7 @@ layout_mode = 2
 text = "..."
 label_settings = SubResource("LabelSettings_m6jb1")
 
-[node name="UnpackProgressContainer" type="Node2D" parent="." node_paths=PackedStringArray("rect")]
+[node name="UnpackProgressContainer" type="Control" parent="." node_paths=PackedStringArray("rect")]
 unique_name_in_owner = true
 visible = false
 script = ExtResource("6_xf3if")
@@ -148,7 +148,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 label_settings = SubResource("LabelSettings_m6jb1")
 
-[node name="AllFileAccessContainer" type="Node2D" parent="." node_paths=PackedStringArray("rect")]
+[node name="AllFileAccessContainer" type="Control" parent="." node_paths=PackedStringArray("rect")]
 unique_name_in_owner = true
 visible = false
 script = ExtResource("6_xf3if")

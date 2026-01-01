@@ -17,9 +17,9 @@ func has_storage_access() -> bool:
 
 # Centralized UI state management
 func set_ui_state(permission_ui: bool = false, select_zip_ui: bool = false, progress_ui: bool = false):
-	(%AllFileAccessContainer as Node2D).visible = permission_ui
+	%AllFileAccessContainer.visible = permission_ui
 	%SelectPicoZip.visible = select_zip_ui
-	(%UnpackProgressContainer as Node2D).visible = progress_ui
+	%UnpackProgressContainer.visible = progress_ui
 
 # Centralized permission denial handling
 func handle_permission_denial():

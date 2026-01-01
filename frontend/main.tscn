@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://crejfo36g5bip"]
+[gd_scene load_steps=39 format=3 uid="uid://crejfo36g5bip"]
 
 [ext_resource type="Script" uid="uid://6wbbc364xejy" path="res://video_streamer.gd" id="1_ig7tw"]
 [ext_resource type="Texture2D" uid="uid://n7xqvr4frt03" path="res://assets/cartdl/cartdl_01.png" id="5_b1qrp"]
@@ -25,6 +25,14 @@
 [ext_resource type="PackedScene" uid="uid://bgklhpsaac82q" path="res://omnipad.tscn" id="41_0cp0l"]
 [ext_resource type="Script" uid="uid://c7rts7fcblaav" path="res://run_pico_cmd.gd" id="41_4lmeg"]
 [ext_resource type="PackedScene" uid="uid://dgbacxvbwjfsh" path="res://landscape_ui.tscn" id="42_land"]
+[ext_resource type="Texture2D" uid="uid://cih0d0dnky0b5" path="res://assets/btn_x_normal.png" id="43_x_norm"]
+[ext_resource type="Texture2D" uid="uid://c6bxpj3hmbwud" path="res://assets/btn_x_pressed.png" id="44_x_press"]
+[ext_resource type="Texture2D" uid="uid://bv08ad6f60lbc" path="res://assets/btn_o_normal.png" id="45_o_norm"]
+[ext_resource type="Texture2D" uid="uid://csbabskwk0hiv" path="res://assets/btn_o_pressed.png" id="46_o_press"]
+[ext_resource type="Texture2D" uid="uid://xrb2fdeigmrg" path="res://assets/btn_esc_normal.png" id="47_esc_norm"]
+[ext_resource type="Texture2D" uid="uid://dgcgu5h435dwx" path="res://assets/btn_esc_pressed.png" id="48_esc_press"]
+[ext_resource type="Texture2D" uid="uid://dlu77ynuh6dl1" path="res://assets/btn_menu_normal.png" id="49_menu_norm"]
+[ext_resource type="Texture2D" uid="uid://cts6512y2afit" path="res://assets/btn_menu_pressed.png" id="50_menu_press"]
 
 [sub_resource type="Gradient" id="Gradient_ig7tw"]
 offsets = PackedFloat32Array(0)
@@ -175,11 +183,14 @@ sprite_frames = SubResource("SpriteFrames_0odxb")
 animation = &"dl"
 autoplay = "dl_1"
 
-[node name="Arranger" type="Node2D" parent="." node_paths=PackedStringArray("rect")]
+[node name="Arranger" type="Control" parent="." node_paths=PackedStringArray("rect")]
+layout_mode = 3
+anchors_preset = 0
 script = ExtResource("16_2cqfq")
 rect = NodePath("ActiveArea")
 
 [node name="ActiveArea" type="ReferenceRect" parent="Arranger"]
+layout_mode = 0
 offset_right = 128.0
 offset_bottom = 300.0
 mouse_filter = 2
@@ -196,6 +207,7 @@ offset = Vector2(256, 256)
 enabled = false
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Arranger"]
+layout_mode = 0
 offset_top = 161.0
 offset_right = 128.0
 offset_bottom = 174.0
@@ -880,10 +892,17 @@ offset_left = 77.0
 offset_top = 4.0
 offset_right = 88.0
 offset_bottom = 10.0
+texture = ExtResource("47_esc_norm")
+patch_margin_left = 0
+patch_margin_top = 0
+patch_margin_right = 0
+patch_margin_bottom = 0
 key_id = "Escape"
 cap_text = "eSC"
 font_type = 3
 unicode = false
+texture_normal = ExtResource("47_esc_norm")
+texture_pressed = ExtResource("48_esc_press")
 metadata/_edit_use_anchors_ = true
 
 [node name="P" parent="Arranger/kbanchor/kb_gaming" instance=ExtResource("20_82xsv")]
@@ -891,35 +910,55 @@ offset_left = 103.0
 offset_top = 4.0
 offset_right = 114.0
 offset_bottom = 10.0
+texture = ExtResource("49_menu_norm")
+patch_margin_left = 0
+patch_margin_top = 0
+patch_margin_right = 0
+patch_margin_bottom = 0
 key_id = "P"
 cap_text = "pAUSE"
 font_type = 3
 unicode = false
+texture_normal = ExtResource("49_menu_norm")
+texture_pressed = ExtResource("50_menu_press")
 metadata/_edit_use_anchors_ = true
 
 [node name="Z" parent="Arranger/kbanchor/kb_gaming" instance=ExtResource("20_82xsv")]
-offset_left = 77.0
-offset_top = 39.0
-offset_right = 88.0
-offset_bottom = 50.0
-key_id = "Z"
-cap_type = 1
-cap_text = "06"
-font_type = 4
-unicode = false
-special_behaviour = 1
-metadata/_edit_use_anchors_ = true
-
-[node name="X" parent="Arranger/kbanchor/kb_gaming" instance=ExtResource("20_82xsv")]
 offset_left = 102.0
 offset_top = 24.0
 offset_right = 113.0
 offset_bottom = 35.0
+texture = ExtResource("45_o_norm")
+patch_margin_left = 0
+patch_margin_top = 0
+patch_margin_right = 0
+patch_margin_bottom = 0
+key_id = "Z"
+cap_type = 1
+cap_text = "06"
+font_type = 4
+special_behaviour = 1
+texture_normal = ExtResource("45_o_norm")
+texture_pressed = ExtResource("46_o_press")
+metadata/_edit_use_anchors_ = true
+
+[node name="X" parent="Arranger/kbanchor/kb_gaming" instance=ExtResource("20_82xsv")]
+offset_left = 77.0
+offset_top = 39.0
+offset_right = 88.0
+offset_bottom = 50.0
+texture = ExtResource("43_x_norm")
+patch_margin_left = 0
+patch_margin_top = 0
+patch_margin_right = 0
+patch_margin_bottom = 0
 key_id = "X"
 cap_type = 1
 cap_text = "05"
 font_type = 4
 special_behaviour = 1
+texture_normal = ExtResource("43_x_norm")
+texture_pressed = ExtResource("44_x_press")
 metadata/_edit_use_anchors_ = true
 
 [node name="Onmipad" parent="Arranger/kbanchor/kb_gaming" instance=ExtResource("41_0cp0l")]
@@ -927,6 +966,7 @@ offset_left = 3.0
 offset_top = 4.0
 offset_right = 34.0
 offset_bottom = 35.0
+scale = Vector2(0.85, 0.85)
 metadata/_edit_use_anchors_ = true
 
 [node name="LandscapeUI" parent="." instance=ExtResource("42_land")]

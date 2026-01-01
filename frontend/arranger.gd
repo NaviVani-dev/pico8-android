@@ -1,11 +1,11 @@
-extends Node2D
+extends Control
 
 @export var rect: Control
 @export var center_y: bool = false
 @export var kb_anchor: Node2D = null
 
 var display_frame: Node2D = null
-var landscape_ui: CanvasLayer = null
+var landscape_ui: Control = null
 var hbox_container: Control = null
 var display_container: Node2D = null
 
@@ -115,6 +115,12 @@ func _process(delta: float) -> void:
 		available_size.x/target_size.x, available_size.y/target_size.y
 	)))
 	self.scale = Vector2(maxScale, maxScale)
+	
+	# Compensate for Arranger zoom to keep high-res D-pad at constant physical size
+	var dpad = get_node_or_null("kbanchor/kb_gaming/Onmipad")
+	if dpad:
+		var target_scale = 0.85 / float(maxScale)
+		dpad.scale = Vector2(target_scale, target_scale)
 	
 	if not visible:
 		visible = true	# Use ACTUAL screensize for centering logic, but calculated scale based on reduced size

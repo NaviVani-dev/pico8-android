@@ -23,6 +23,8 @@ static var keycap_locked = preload("res://assets/keycap_locked.png")
 @export var unicode_override: String = ""
 @export var shift_unicode_override: String = ""
 @export var special_behaviour: SpecialBehaviour = SpecialBehaviour.NONE
+@export var texture_normal: Texture2D = null
+@export var texture_pressed: Texture2D = null
 
 enum KeyState { RELEASED, HELD, LOCKED }
 
@@ -70,9 +72,9 @@ func _gui_input(event: InputEvent) -> void:
 
 	match key_state:
 		KeyState.RELEASED:
-			self.texture = keycap_normal
+			self.texture = texture_normal if texture_normal else keycap_normal
 		KeyState.HELD:
-			self.texture = keycap_held
+			self.texture = texture_pressed if texture_pressed else keycap_held
 		KeyState.LOCKED:
 			self.texture = keycap_locked
 
@@ -87,6 +89,15 @@ func _ready() -> void:
 		cap_text_shift = cap_text_shift.hex_decode().get_string_from_ascii()
 	elif cap_type_shift == KeycapType.NONE:
 		cap_text_shift = cap_text
+		
+	if texture_normal and key_state == KeyState.RELEASED:
+		self.texture = texture_normal
+		self.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+		%Label.visible = false
+	elif texture_pressed and key_state == KeyState.HELD:
+		self.texture = texture_pressed
+		self.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+		%Label.visible = false
 
 func _process(delta: float) -> void:
 	var shift_held = "Shift" in PicoVideoStreamer.instance.held_keys
@@ -102,6 +113,9 @@ func _process(delta: float) -> void:
 		%Label.text = cap_text_shift
 	else:
 		%Label.text = cap_text
+		
+	var myrect = self.get_rect().size / 2
+	var lblrect = %Label.get_rect().size
 
 	var regular_font_on = (
 		(font_type != FontType.WIDE)
@@ -117,28 +131,21 @@ func _process(delta: float) -> void:
 	else:
 		%Label.label_settings.font = font_wide
 	
-	%Label.label_settings.font_color = Color(0, 0, 0, 1) # Force BLACK color
+	# %Label.label_settings.font_color = Color(1, 0, 0, 1) # Force BLACK color
 	
 	if small_font_on:
 		%Label.label_settings.font_size = 5
 	else:
 		%Label.label_settings.font_size = 10
 		
-	# Anchor-Based Centering (Robust)
-	# Force Label to match Button size logic
-	%Label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	
-	# Force Alignment (just in case)
-	%Label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	%Label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	
-	# Set Pivot to center so scale (0.5) keeps it centered
-	%Label.pivot_offset = %Label.size / 2
-	
-	# Remove manual nudges - rely on pure centering
-	# But shift slightly LEFT (-1) to account for button shadow/3D depth
-	%Label.position += Vector2(-1, 0)
-	
+	%Label.position = Vector2(
+		round(myrect.x - lblrect.x),
+		round(myrect.y - lblrect.y)
+	) / 2
+	if regular_font_on:
+		%Label.position += Vector2(0.5,-1)
+	else:
+		%Label.position += Vector2(0,-1)
 	if key_state != KeyState.RELEASED:
 		%Label.position += Vector2(0, 1)
 		
@@ -147,4 +154,4 @@ func _notification(what: int) -> void:
 		if key_state != KeyState.RELEASED:
 			key_state = KeyState.RELEASED
 			send_ev(false)
-			self.texture = keycap_normal
+			self.texture = texture_normal if texture_normal else keycap_normal

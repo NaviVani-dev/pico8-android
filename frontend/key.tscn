@@ -36,4 +36,3 @@ text = "e"
 label_settings = SubResource("LabelSettings_krfvd")
 horizontal_alignment = 1
 vertical_alignment = 1
-clip_text = false
