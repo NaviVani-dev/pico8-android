@@ -19,10 +19,10 @@ config/description="
 
 
 by @unmatchedbracket"
-config/version="0.0.2"
+config/version="0.0.5"
 run/main_scene="uid://clwlaw414wfp8"
 config/quit_on_go_back=false
-config/features=PackedStringArray("4.4", "Mobile")
+config/features=PackedStringArray("4.5", "Mobile")
 boot_splash/bg_color=Color(0.00784314, 0.0156863, 0.0235294, 1)
 boot_splash/use_filter=false
 boot_splash/image="uid://c3dqg0oq8wp1"
@@ -32,12 +32,7 @@ config/icon="uid://cishtcd4y3no7"
 
 window/size/viewport_width=256
 window/size/viewport_height=512
-window/handheld/orientation=5
-
-[editor]
-
-version_control/plugin_name="GitPlugin"
-version_control/autoload_on_startup=true
+window/handheld/orientation=6
 
 [editor_plugins]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bsbipulwwdclu"
-path="res://.godot/imported/onmipad.png-5b07e27e933aada2f751e9035acc7abd.ctex"
+uid="uid://shpx84pg158k"
+path="res://.godot/imported/pico8_logo_vector.png-a852329236e9ef4c34213ec8a71df05f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/onmipad.png"
-dest_files=["res://.godot/imported/onmipad.png-5b07e27e933aada2f751e9035acc7abd.ctex"]
+source_file="res://assets/pico8_logo_vector.png"
+dest_files=["res://.godot/imported/pico8_logo_vector.png-a852329236e9ef4c34213ec8a71df05f.ctex"]
 
 [params]
 
