@@ -38,7 +38,7 @@ This fork introduces several enhancements to improve the experience on Android d
 *   **Android Handheld Support:** Tested and verified on devices like the **RG Cube**.
 *   **Virtual Keyboard:** Access the Android keyboard at any time by sliding up from the bottom of the screen.
 *   **Options Menu:** Access the side menu for settings and options by sliding from the left side of the screen.
-
+*   **Frontend Support:** Just pass your game path as a `GAME` extra and this wrapper will handle everything for you.
 
 ## 📂 Project Structure
 - `frontend/`: Godot app part; sets up environment and handles video output and keyboard/mouse input.
@@ -48,7 +48,7 @@ This fork introduces several enhancements to improve the experience on Android d
 ## 🛠️ Building
 ### Godot Frontend
 1. Download [Godot](https://godotengine.org) version ≥4.4.1.
-2. Put `package.dat` from Releases in the project ~~or build it from bootstrap/ (soon)~~; this is the bootstrap package and is pretty essential
+2. Put `package.dat` from the original repository [Releases tab](https://github.com/UnmatchedBracket/pico8-android/releases/download/v1.0.0/package.dat) in the project, this is the bootstrap package and is pretty essential
 3. In Godot, **Project > Install Android Build Template**
 4. then just do the normal **Project > Export**
 
@@ -61,8 +61,12 @@ A huge thank you to **[UnmatchedBracket](https://github.com/UnmatchedBracket)**,
 
 Also, a big thanks to **[kishan-dhankecha](https://github.com/kishan-dhankecha)** for his contributions and modifications to the original frontend which this fork builds upon.
 
+And finally, huge thanks to **[Macs75](https://github.com/Macs75)** for his fork with a lot of new improvements and fixes.
+
+Without all of this people, this little fork wouldn't exist.
+
 
 ## ☕ Support Me
-If you enjoy this project and would like to support its ongoing development and future improvements, please consider buying me a coffee! Your support is greatly appreciated.
+If you enjoy this project and would like to support its ongoing development and future improvements, please consider buying Macs75 a coffee! Your support is greatly appreciated.
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/macs34661)

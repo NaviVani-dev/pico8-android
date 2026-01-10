@@ -2,11 +2,13 @@ extends Node
 class_name PicoBootManager
 
 static var pico_zip_path: String = ""
+var _extras_plugin
 
 # Static constants that can be accessed from other scripts
 static var BIN_PATH = "/system/bin"
 static var APPDATA_FOLDER = "/data/data/io.wip.pico8/files"
 static var PUBLIC_FOLDER = "/sdcard/Documents/pico8"
+static var LAUNCHED_GAME = ""
 
 # Centralized permission checking
 func has_storage_access() -> bool:
@@ -62,8 +64,13 @@ func _ready() -> void:
 	# Wait for the window to be fully initialized to avoid race conditions with focus events
 	await get_tree().process_frame
 	await get_tree().process_frame
-	
+
 	if has_storage_access():
+		if Engine.has_singleton("GodotPico8Extras"):
+			_extras_plugin = Engine.get_singleton("GodotPico8Extras")
+			var gamepath = _extras_plugin.getPicoGame()
+			if gamepath:
+				LAUNCHED_GAME = handle_launched_game(gamepath)
 		check_for_files()
 	else:
 		request_storage_permission()
@@ -160,6 +167,20 @@ func setup():
 	get_tree().change_scene_to_file("res://main.tscn")
 
 var waiting_for_focus = false
+
+func handle_launched_game(gamepath: String) -> String:
+	var target_dir = PUBLIC_FOLDER
+	var filename = gamepath.get_file()
+	var finalpath = target_dir + "/" + filename
+	if gamepath != finalpath:
+		if FileAccess.file_exists(finalpath):
+			DirAccess.remove_absolute(finalpath)
+		var file = DirAccess.copy_absolute(gamepath, finalpath)
+		if file == OK:
+			print("game card copied")
+		else:
+			print("error ocurred: ", file)
+	return filename
 
 func request_storage_permission():
 	set_ui_state(true, false, false) # permission_ui=true, select_zip_ui=false, progress_ui=false

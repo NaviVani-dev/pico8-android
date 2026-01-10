@@ -21,10 +21,13 @@ func _ready() -> void:
 	var cmdline = ""
 	# Explicitly set HOME to the package directory to fix "Failed to get home directory" matches
 	var env_setup = "export HOME=" + pkg_path + "; "
+	var run_arg = ""
+	if PicoBootManager.LAUNCHED_GAME != "":
+		run_arg = " -run /home/public/" + PicoBootManager.LAUNCHED_GAME
 	
 	match execution_mode:
 		ExecutionMode.PICO8:
-			cmdline = env_setup + 'cd ' + pkg_path + '; LD_LIBRARY_PATH=. ./busybox ash start_pico_proot.sh >' + PicoBootManager.PUBLIC_FOLDER + '/logs/pico_out.txt 2>' + PicoBootManager.PUBLIC_FOLDER + "/logs/pico_err.txt"
+			cmdline = env_setup + 'cd ' + pkg_path + '; LD_LIBRARY_PATH=. ./busybox ash start_pico_proot.sh' + run_arg + ' > ' + PicoBootManager.PUBLIC_FOLDER + '/logs/pico_out.txt 2>' + PicoBootManager.PUBLIC_FOLDER + "/logs/pico_err.txt"
 		ExecutionMode.TELNETSSH:
 			cmdline =  'cd ' + pkg_path + '; ln -s busybox ash; LD_LIBRARY_PATH=. ./busybox telnetd -l ./ash -F -p 2323'
 	pico_pid = OS.create_process(
