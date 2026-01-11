@@ -9,6 +9,7 @@ static var BIN_PATH = "/system/bin"
 static var APPDATA_FOLDER = "/data/data/io.wip.pico8/files"
 static var PUBLIC_FOLDER = "/sdcard/Documents/pico8"
 static var LAUNCHED_GAME = ""
+static var SIMPLE_MODE = false
 
 # Centralized permission checking
 func has_storage_access() -> bool:
@@ -71,6 +72,7 @@ func _ready() -> void:
 			var gamepath = _extras_plugin.getPicoGame()
 			if gamepath:
 				LAUNCHED_GAME = handle_launched_game(gamepath)
+				SIMPLE_MODE = true
 		check_for_files()
 	else:
 		request_storage_permission()
@@ -177,7 +179,7 @@ func handle_launched_game(gamepath: String) -> String:
 			DirAccess.remove_absolute(finalpath)
 		var file = DirAccess.copy_absolute(gamepath, finalpath)
 		if file == OK:
-			print("game card copied")
+			print("game card copied to ", finalpath)
 		else:
 			print("error ocurred: ", file)
 	return filename

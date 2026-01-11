@@ -34,9 +34,17 @@ func _ready() -> void:
 	# Connect the single keyboard toggle button
 	var keyboard_btn = get_node("Arranger/kbanchor/HBoxContainer/Keyboard Btn")
 	if keyboard_btn:
-		keyboard_btn.pressed.connect(_on_keyboard_toggle_pressed)
-		# Set initial button label based on current state
-		_update_keyboard_button_label()
+		if PicoBootManager.SIMPLE_MODE:
+			keyboard_btn.hide()
+		else:
+			keyboard_btn.pressed.connect(_on_keyboard_toggle_pressed)
+			# Set initial button label based on current state
+			_update_keyboard_button_label()
+			
+	var esc_btn = get_node("Arranger/kbanchor/kb_gaming/esc")
+	if esc_btn:
+		if PicoBootManager.SIMPLE_MODE:
+			esc_btn.hide()
 		
 	KBMan.subscribe(_on_external_keyboard_change)
 	
@@ -451,7 +459,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			JoyButton.JOY_BUTTON_A, JoyButton.JOY_BUTTON_Y: key_id = "Z" # Pico-8 O
 			JoyButton.JOY_BUTTON_B, JoyButton.JOY_BUTTON_X: key_id = "X" # Pico-8 X
 			JoyButton.JOY_BUTTON_START: key_id = "P" # Pause
-			JoyButton.JOY_BUTTON_BACK, JoyButton.JOY_BUTTON_GUIDE: key_id = "Escape" # Menu
+			JoyButton.JOY_BUTTON_BACK, JoyButton.JOY_BUTTON_GUIDE: # Menu or Pause if ur on simple mode.
+				if PicoBootManager.SIMPLE_MODE:
+					key_id = "P"
+				else:
+					key_id = "Escape"
 			JoyButton.JOY_BUTTON_DPAD_UP: key_id = "Up"
 			JoyButton.JOY_BUTTON_DPAD_DOWN: key_id = "Down"
 			JoyButton.JOY_BUTTON_DPAD_LEFT: key_id = "Left"

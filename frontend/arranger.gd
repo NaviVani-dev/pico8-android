@@ -209,7 +209,8 @@ func _process(delta: float) -> void:
 
 
 	if is_landscape:
-		landscape_ui.visible = not is_controller_connected
+		if landscape_ui:
+			landscape_ui.visible = not is_controller_connected
 		# Perfect Centering for Landscape Game Display
 		self.position = (Vector2(screensize) / 2).floor()
 	else:

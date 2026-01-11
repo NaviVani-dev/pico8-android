@@ -22,8 +22,11 @@ func _ready() -> void:
 	# Explicitly set HOME to the package directory to fix "Failed to get home directory" matches
 	var env_setup = "export HOME=" + pkg_path + "; "
 	var run_arg = ""
+	# just run splore if we dont have a game to launch
 	if PicoBootManager.LAUNCHED_GAME != "":
 		run_arg = " -run /home/public/" + PicoBootManager.LAUNCHED_GAME
+	else:
+		run_arg = " -splore"
 	
 	match execution_mode:
 		ExecutionMode.PICO8:
@@ -41,6 +44,19 @@ func _ready() -> void:
 			PicoBootManager.BIN_PATH + "/sh",
 			["-c", 'cd ' + PicoBootManager.APPDATA_FOLDER + '/package; ln -s busybox ash; LD_LIBRARY_PATH=. ./busybox telnetd -l ./ash -F -p 2323']
 		)
+		
+func _notification(what: int) -> void:
+	if pico_pid == null or pico_pid == -1:
+		return
+	
+	match what:
+		NOTIFICATION_APPLICATION_PAUSED:
+			print("focus lost, pausing")
+			OS.execute(PicoBootManager.BIN_PATH + "/kill", ["-19", "-" + str(pico_pid)])
+		NOTIFICATION_APPLICATION_RESUMED:
+			print("were back baby")
+			OS.execute(PicoBootManager.BIN_PATH + "/kill", ["-18", "-" + str(pico_pid)])
+
 
 func _process(delta: float) -> void:
 	if pico_pid and not OS.is_process_running(pico_pid):

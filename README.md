@@ -50,7 +50,7 @@ This fork introduces several enhancements to improve the experience on Android d
 1. Download [Godot](https://godotengine.org) version ≥4.4.1.
 2. Put `package.dat` from the original repository [Releases tab](https://github.com/UnmatchedBracket/pico8-android/releases/download/v1.0.0/package.dat) in the project, this is the bootstrap package and is pretty essential
 3. In Godot, **Project > Install Android Build Template**
-4. then just do the normal **Project > Export**
+4. Then just do the normal **Project > Export**
 
 
 
