@@ -67,6 +67,6 @@ Without all of this people, this little fork wouldn't exist.
 
 
 ## ☕ Support Me
-If you enjoy this project and would like to support its ongoing development and future improvements, please consider buying Macs75 a coffee! Your support is greatly appreciated.
+If you enjoy this project and you have an extra buck, please consider donating to my Ko-Fi!
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/macs34661)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/navivani_dev)
